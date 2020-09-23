@@ -1,22 +1,24 @@
 import os
 from gi.repository import Nautilus, GObject
 
+try:
+    from shutil import which
+except ImportError:
+    def which(program):
+        def _is_exe(fd):
+            return os.path.isfile(fd) and os.access(fd, os.X_OK)
 
-def which(program):
-    def _is_exe(fd):
-        return os.path.isfile(fd) and os.access(fd, os.X_OK)
+        fpath, fname = os.path.split(program)
 
-    fpath, fname = os.path.split(program)
-
-    if fpath:
-        if _is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe = os.path.join(path, program)
-            if _is_exe(exe):
-                return exe
-    return None
+        if fpath:
+            if _is_exe(program):
+                return program
+        else:
+            for path in os.environ["PATH"].split(os.pathsep):
+                exe = os.path.join(path, program)
+                if _is_exe(exe):
+                    return exe
+        return None
 
 
 class OpenWithAtomExtension(GObject.GObject, Nautilus.MenuProvider):
