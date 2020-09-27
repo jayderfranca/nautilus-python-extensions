@@ -48,12 +48,18 @@ class OpenWithAtomExtension(GObject.GObject, Nautilus.MenuProvider):
             return
 
         selected = files[0]
+        if selected.get_uri_scheme() != 'file':
+            return
+
         item = Nautilus.MenuItem(name='Nautilus::open_with_atom_file',
                                  label='Open With Atom')
         item.connect('activate', self.menu_activate_cb, selected)
         return item,
 
     def get_background_items(self, _, current_folder):
+        if current_folder.get_uri_scheme() != 'file':
+            return
+
         item = Nautilus.MenuItem(name='Nautilus::open_with_atom_background',
                                  label='Open With Atom')
         item.connect('activate', self.menu_background_activate_cb, current_folder)
