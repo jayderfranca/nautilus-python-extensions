@@ -32,9 +32,6 @@ class OpenWithSublimeExtension(GObject.GObject, Nautilus.MenuProvider):
         if selected.get_uri_scheme() != 'file':
             return
 
-        print("get_file_items")
-        print(selected)
-
         item = Nautilus.MenuItem(name='Nautilus::open_with_sublime_file',
                                  label='Open With Sublime')
         item.connect('activate', self.menu_activate_cb, selected)
@@ -43,9 +40,6 @@ class OpenWithSublimeExtension(GObject.GObject, Nautilus.MenuProvider):
     def get_background_items(self, _, current_folder):
         if current_folder.get_uri_scheme() != 'file':
             return
-
-        print("get_background_items")
-        print(current_folder)
 
         item = Nautilus.MenuItem(name='Nautilus::open_with_sublime_background',
                                  label='Open With Sublime')
