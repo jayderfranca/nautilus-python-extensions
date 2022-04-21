@@ -14,13 +14,19 @@ class OpenWithSublimeExtension(GObject.GObject, Nautilus.MenuProvider):
     def _open_sublime(self, item):
         os.system('%s %s' % (self._location, item.get_location().get_path()))
 
-    def _validate(self, file):
+    def _new_menu_nautilus(self, name, file, callback):
 
         if not self._is_installed():
-            return False
+            return
 
         if file.get_uri_scheme() != 'file':
-            return False
+            return
+
+        item = Nautilus.MenuItem(name='OpenWithSublimeExtension::' + name,
+                                 label='Open With Sublime')
+
+        item.connect('activate', callback, file)
+        return item,
 
     def menu_activate_cb(self, _, item):
         self._open_sublime(item)
@@ -29,26 +35,8 @@ class OpenWithSublimeExtension(GObject.GObject, Nautilus.MenuProvider):
         self._open_sublime(current_folder)
 
     def get_file_items(self, _, files):
-
-        if len(files) != 1:
-            return
-
-        if not self._validate(files[0]):
-            return
-
-        item = Nautilus.MenuItem(name='OpenWithSublimeExtension::File',
-                                 label='Open With Sublime')
-
-        item.connect('activate', self.menu_activate_cb, files[0])
-        return item,
+        if len(files) == 1:
+            return self._new_menu_nautilus("File", files[0], self.menu_activate_cb)
 
     def get_background_items(self, _, current_folder):
-
-        if not self._validate(current_folder):
-            return
-
-        item = Nautilus.MenuItem(name='OpenWithSublimeExtension::Background',
-                                 label='Open With Sublime')
-
-        item.connect('activate', self.menu_background_activate_cb, current_folder)
-        return item,
+        return self._new_menu_nautilus("Background", current_folder, self.menu_background_activate_cb)
